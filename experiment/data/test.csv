@@ -1,0 +1,27 @@
+Received block blk_12345 of size 67108864 from /default-rack/10.0.0.1
+Received block blk_67890 of size 134217728 from /default-rack/10.0.0.2
+Received block blk_99999 of size 67108864 from /default-rack/10.0.0.3
+Slow BlockReceiver write packet to 10.0.0.3 took 3123 ms
+Slow BlockReceiver write packet to 10.0.0.4 took 5123 ms
+Failed to receive block blk_11111 from /default-rack/10.0.0.5
+Failed to receive block blk_22222 from /default-rack/10.0.0.6
+Heartbeat received from datanode 123
+Heartbeat received from datanode 456
+Starting DataNode on core1
+Starting DataNode on core2
+Connected to node 192.168.1.1 port 5000 success
+Connected to node 192.168.1.2 port 5000 success
+Request typeA accepted by system
+Request typeB accepted by system
+Request typeC accepted by system
+Request typeD accepted by system
+Request typeE accepted by system
+Request typeF accepted by system
+Job 101 started at 2026-05-20 14:01:23
+Job 102 started at 2026-05-20 14:02:45
+Job 103 started at 2026-05-20 14:03:12
+Job 104 started at 2026-05-20 14:05:00
+Job 105 started at 2026-05-20 14:06:18
+Job 106 started at 2026-05-20 14:07:55
+Backup task started on node A
+Restore task started on node B
