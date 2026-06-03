@@ -1,6 +1,10 @@
 data/
 __pycache__/
+local/
 
 .conda
 .vscode
 .idea
+.claude
+
+CLAUDE.md
