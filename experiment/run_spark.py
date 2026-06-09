@@ -49,6 +49,7 @@ def parse_args():
     p.add_argument("--max-depth", type=int, default=5, help="Drain 树最大深度")
     p.add_argument("--max-children", type=int, default=100, help="每层最大子节点数")
     p.add_argument("--st", type=float, default=0.5, help="相似度阈值")
+    p.add_argument("--auto-st", type=bool, default=False, help="是否启用自适应相似度阈值")
     p.add_argument("--limit", type=int, default=0,
                    help="仅取前 N 条用于快速调试，0 表示全部")
     return p.parse_args()
@@ -136,6 +137,7 @@ def run_one_type(spark: SparkSession, df, log_type: str, suffix: str, args):
         max_depth=args.max_depth,
         max_children=args.max_children,
         st=args.st,
+        auto_st=args.auto_st
     )
 
     out_path = write_templates(args.output, log_type, templates)
