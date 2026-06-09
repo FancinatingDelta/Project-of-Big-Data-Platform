@@ -19,7 +19,6 @@ from typing import Iterable, List, Tuple
 from drain import Drain
 from util import similarity
 from preprocess import get_rules
-from drain_progress import record_partials
 
 PARAM_TOKEN = "<*>"
 
@@ -116,7 +115,5 @@ def mine_templates(
     partials = value_rdd.mapPartitions(
         lambda it: parse_partition(it, log_type, max_depth, max_children, st)
     ).collect()
-
-    # record_partials(log_type, partials)
 
     return merge_templates(partials, st)
