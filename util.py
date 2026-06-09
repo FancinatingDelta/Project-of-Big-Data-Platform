@@ -46,13 +46,16 @@ def similarity(new: List[str], old: List[str]) -> Tuple[float, int]:
     if len(new) == 0:
         return 1.0, 0
 
-    same_count, param_count = 0, 0
+    same_count, total = 0, 0
+    param_count = 0
+
     for t1, t2 in zip(new, old):
-        if t1 == PARAM_TOKEN:
+        if t2 == PARAM_TOKEN:
             param_count += 1
             continue
+        total += 1
         if t1 == t2:
             same_count += 1
 
-    sim = float(same_count) / len(new)
+    sim = float(same_count) / total
     return sim, param_count

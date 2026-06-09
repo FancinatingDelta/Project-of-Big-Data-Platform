@@ -1,3 +1,4 @@
+import math
 import re
 from typing import List, Dict, Union, Optional
 
@@ -6,16 +7,57 @@ from util import routing_token, similarity
 PARAM_TOKEN = "<*>"
 
 class Cluster:
-    def __init__(self, tokens: Optional[List[str]] = None):
+    def __init__(
+        self,
+        tokens: Optional[List[str]] = None,
+        st: float = 0.4,
+        auto_st: bool = False,
+    ):
         self.template = tokens or []
         self.count = 1 if tokens else 0
-    
+
+        self.auto_st = auto_st
+        self.eta = 0
+
+        self.dig_len = 0
+        self.seq_len = 0
+        self.st_init = st
+        self.base = 2
+
+        self._init_st(st, auto_st)
+
+    def _init_st(self, st: float, auto_st: bool) -> None:
+        if not auto_st:
+            self.st = st
+            return
+
+        tokens = self.template
+        self.seq_len = len(tokens)
+        self.dig_len = sum(t.isdigit() for t in tokens)
+
+        if self.seq_len == 0:
+            self.st_init = 0.5
+        else:
+            self.st_init = 0.5 * (self.seq_len - self.dig_len) / self.seq_len
+
+        self.st = self.st_init
+        self.base = max(2, self.dig_len + 1)
+
     def update(self, tokens: List[str]) -> None:
-        self.template = [
-            t1 if t1 == t2 else PARAM_TOKEN
-            for t1, t2 in zip(tokens, self.template)
-        ]
+        new_template = []
+
+        for t1, t2 in zip(tokens, self.template):
+            if t1 == t2:
+                new_template.append(t1)
+            else:
+                new_template.append(PARAM_TOKEN)
+                self.eta += 1
+
+        self.template = new_template
         self.count += 1
+
+        if self.auto_st:
+            self.st = min(1.0, self.st_init + 0.5 * math.log(self.eta + 1, self.base))
 
     def __str__(self):
         return f"Cluster(size={self.count}): {' '.join(self.template)}"
@@ -41,6 +83,7 @@ class Drain:
         max_children: int = 100,
         rules: Optional[List[Dict[str, str]]] = None,
         st: float = 0.4,
+        auto_st: bool = False,
     ):
         """
         初始化 Drain 解析器。
@@ -61,6 +104,7 @@ class Drain:
         self.max_children = max_children
         self.rules = rules or []
         self.st = st
+        self.auto_st = auto_st
 
     def preprocess(self, line: str) -> str:
         """
@@ -90,7 +134,7 @@ class Drain:
         for idx in range(token_len + 1):
             # 到达叶子层，直接创建 Cluster
             if depth + 1 >= self.max_depth or idx == token_len:
-                node.clusters.append(Cluster(tokens))
+                node.clusters.append(Cluster(tokens, st=self.st, auto_st=self.auto_st))
                 return
 
             router, remaining = routing_token(remaining[:])
@@ -145,7 +189,7 @@ class Drain:
         # 在所有候选 Cluster 中选择最优
         for cluster in node.clusters:
             sim, par_count = similarity(tokens, cluster.template)
-            if sim > self.st:
+            if sim >= cluster.st:
                 if (sim > max_sim or
                    (sim == max_sim and par_count > max_par_count)):
                     best = cluster
@@ -178,6 +222,7 @@ class Drain:
                 templates.append({
                     "template": " ".join(cluster.template),
                     "count": cluster.count,
+                    "st": cluster.st,
                 })
             for child in node.children.values():
                 dfs(child)
