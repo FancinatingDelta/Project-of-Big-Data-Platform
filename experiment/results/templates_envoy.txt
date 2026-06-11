@@ -1,0 +1,15 @@
+14646635	"POST <*> <*> <NUM> <*> <*> - "-" <NUM> <NUM> <NUM> <*> "-" <*> "<TID>" <*> <*> <*> <*> <ADDR> <ADDR> <*> default
+6585987	<*> <*> <*> <NUM> - <*> - "-" <NUM> <NUM> <NUM> <*> "-" <*> <*> <*> "<ADDR>" <*> <ADDR> <ADDR> <ADDR> <*> <*>
+2331333	"- - -" <NUM> <*> - - "-" <NUM> <NUM> <NUM> - "-" "-" "-" "-" "<ADDR>" <*> <*> <ADDR> <ADDR> <*> -
+1401051	"POST /hipstershop.ProductCatalogService/ListProducts HTTP/<NUM>" <NUM> - via_upstream - "-" <NUM> <NUM> <NUM> <NUM> "-" "grpc-python/<NUM>.<NUM>.<NUM> grpc-c/<NUM>.<NUM>.<NUM> (manylinux; chttp2)" "<TID>" "productcatalogservice:<NUM>" "<ADDR>" <*> <ADDR> <ADDR> <ADDR> <*> default
+1009362	<*> <*> HTTP/<NUM>.<NUM>" <NUM> <*> <*> - "-" <NUM> <NUM> <NUM> <*> "-" <*> <*> "<TID>" <*> "<ADDR>" <*> <ADDR> <ADDR> <ADDR> - default
+4450	warning envoy config StreamAggregatedResources gRPC config stream closed: <NUM>, transport is closing
+4450	info xdsproxy connected to upstream XDS server: istiod.istio-system.svc:<NUM>
+186	info cache generated new workload certificate <*> <*>
+186	info ads XDS: Incremental Pushing:<NUM> ConnectedEndpoints:<NUM> Version:
+186	info sds SDS: PUSH resource=default
+118	warning envoy config StreamAggregatedResources gRPC config stream closed: <NUM>, connection error: desc = "transport: Error while dialing dial tcp: i/o timeout"
+23	warning envoy config StreamAggregatedResources gRPC config stream closed: <NUM>, connection error: desc = "transport: Error while dialing dial tcp: lookup istiod.istio-system.svc on <ADDR>: read udp <ADDR>-><ADDR>: i/o timeout"
+5	warning envoy config StreamAggregatedResources gRPC config stream closed: <NUM>, connection error: desc = "transport: Error while dialing dial tcp <ADDR>: i/o timeout"
+4	warning envoy config StreamAggregatedResources gRPC config stream closed: <NUM>, connection error: desc = "transport: Error while dialing dial tcp: lookup istiod.istio-system.svc on <ADDR>: no such host"
+1	warning envoy config StreamAggregatedResources gRPC config stream closed: <NUM>, connection error: desc = "transport: authentication handshake failed: context deadline exceeded"

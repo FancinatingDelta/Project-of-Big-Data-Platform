@@ -14,12 +14,11 @@ Drain 原算法是有状态的串行在线算法，无法直接分布式执行�
 
 这样既复用了单机 drain.py 的算法逻辑，又能借助 Spark 横向扩展处理大数据。
 """
-from typing import Iterable, List, Tuple
+from typing import Dict, Iterable, List, Tuple
 
 from drain import Drain
 from util import similarity
 from preprocess import get_rules
-from drain_progress import record_partials
 
 PARAM_TOKEN = "<*>"
 
@@ -99,6 +98,147 @@ def merge_templates(partials: List[Template], st: float) -> List[Template]:
 
     result.sort(key=lambda x: x[1], reverse=True)
     return result
+
+
+# ---------------------------------------------------------------------------
+# 参数树构建（二次遍历）
+# ---------------------------------------------------------------------------
+
+def _match_template(
+    tokens: List[str],
+    templates_by_len: dict,
+    st: float,
+):
+    """将一条已预处理的日志 token 列表匹配到最佳模板。
+
+    :param tokens: 预处理后的日志 token 列表
+    :param templates_by_len: {token_len: [(idx, template_tokens), ...]}
+    :param st: 相似度阈值
+    :return: (template_idx, param_values) 或 (None, []) 无匹配时
+    """
+    length = len(tokens)
+    if length not in templates_by_len:
+        return None, []
+
+    candidates = templates_by_len[length]
+    best_idx = None
+    best_sim = -1.0
+    best_par_count = -1
+
+    for idx, tpl_tokens in candidates:
+        sim, par_count = similarity(tokens, tpl_tokens)
+        if sim >= st:
+            if sim > best_sim or (sim == best_sim and par_count > best_par_count):
+                best_sim = sim
+                best_idx = idx
+                best_par_count = par_count
+
+    if best_idx is not None:
+        # 找到最佳匹配，提取 <*> 位置的参数值
+        tpl_tokens = None
+        for idx2, t in candidates:
+            if idx2 == best_idx:
+                tpl_tokens = t
+                break
+        if tpl_tokens is None:
+            return None, []
+        param_values = [
+            tok for tok, tpl in zip(tokens, tpl_tokens) if tpl == PARAM_TOKEN
+        ]
+        return best_idx, param_values
+
+    return None, []
+
+
+def _build_trees_on_partition(
+    lines: Iterable[str],
+    templates_by_len_bc,
+    log_type: str,
+    st: float,
+) -> Iterable[Dict[int, "ParamTree"]]:
+    """在单个分区上：匹配日志→模板，构建该分区的参数树字典。
+
+    作为 RDD.mapPartitions 的处理函数使用。
+    """
+    from preprocess import get_rules
+    from param_tree import ParamTree
+
+    rules = get_rules(log_type)
+    templates_by_len = templates_by_len_bc.value
+
+    trees: Dict[int, ParamTree] = {}
+
+    for line in lines:
+        if line is None:
+            continue
+        line = line.strip()
+        if not line:
+            continue
+
+        # 预处理（与 Drain 解析阶段一致）
+        for rule in rules:
+            line = __import__("re").sub(rule["pattern"], rule["replacement"], line)
+
+        tokens = line.split()
+        result = _match_template(tokens, templates_by_len, st)
+        if result[0] is None:
+            continue
+
+        idx, param_values = result
+        if idx not in trees:
+            trees[idx] = ParamTree("")
+        trees[idx].add_params(param_values)
+
+    yield trees
+
+
+def build_param_trees(
+    value_rdd,
+    templates: List[Template],
+    log_type: str,
+    st: float,
+):
+    """二次遍历日志，为每个最终模板构建参数分布树。
+
+    :param value_rdd: 元素为日志 value 字符串的 RDD
+    :param templates: merge_templates 返回的最终全局模板列表 [(模板, 次数), ...]
+    :param log_type: 日志类型（envoy / service）
+    :param st: 相似度阈值
+    :return: dict[int, ParamTree]，键为模板在 templates 列表中的索引
+    """
+    from param_tree import ParamTree
+
+    spark = value_rdd.context
+
+    # 构建查找结构：按 token 长度分桶
+    templates_by_len: dict = {}
+    for idx, (tpl_str, _count) in enumerate(templates):
+        tokens = tpl_str.split()
+        length = len(tokens)
+        templates_by_len.setdefault(length, []).append((idx, tokens))
+
+    templates_by_len_bc = spark.broadcast(templates_by_len)
+
+    # 每个分区构建局部 ParamTree 字典，然后 collect 到 driver 合并
+    partial_dicts = value_rdd.mapPartitions(
+        lambda it: _build_trees_on_partition(
+            it, templates_by_len_bc, log_type, st
+        )
+    ).collect()
+
+    templates_by_len_bc.unpersist()
+
+    # 在 driver 端合并所有分区的树 + 填充模板字符串
+    merged: Dict[int, ParamTree] = {}
+    for pdict in partial_dicts:
+        for idx, tree in pdict.items():
+            if idx in merged:
+                merged[idx].merge(tree)
+            else:
+                tree.template = templates[idx][0]
+                merged[idx] = tree
+
+    return merged
 
 
 def mine_templates(

@@ -34,7 +34,8 @@ from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
 
 from preprocess import ENVOY, SERVICE
-from spark_drain import mine_templates
+from spark_drain import mine_templates, build_param_trees
+from param_tree import render_param_tree
 
 
 def parse_args():
@@ -92,6 +93,9 @@ def read_logs(spark: SparkSession, input_dir: str):
 
     local_files = _list_local_csv(input_dir)
     if local_files:
+        # os.walk 找到文件说明在本地文件系统，必须加 file:// 前缀
+        # 否则 Spark 默认走 HDFS (hdfs://master:9000/...) 会找不到
+        local_files = [f"file://{os.path.abspath(f)}" for f in local_files]
         df = reader.csv(local_files)
     else:
         # HDFS / 集群路径：直接按目录递归读
@@ -117,6 +121,38 @@ def write_templates_hdfs(spark: SparkSession, output_dir: str, name: str, templa
         .saveAsTextFile(os.path.join(output_dir, dir_name))
 
     return os.path.join(output_dir, dir_name)
+
+def _write_tree_output(output_dir: str, name: str, param_trees: dict, templates):
+    """将参数树以树状文本写入文件。"""
+    import os
+    os.makedirs(output_dir, exist_ok=True)
+    out_path = os.path.join(output_dir, f"templates_{name}_tree.txt")
+
+    # 按模板出现次数降序排列输出
+    # param_trees: dict[template_idx -> ParamTree]
+    # templates: list[(template_str, count)]
+    ordered = sorted(
+        param_trees.items(),
+        key=lambda item: templates[item[0]][1],
+        reverse=True,
+    )
+
+    with open(out_path, "w", encoding="utf-8") as f:
+        for idx, tree in ordered:
+            count = templates[idx][1]
+            # 只有含 <*> 的模板才有参数树可展示
+            if not tree.root.children:
+                f.write(f"[{count}] {tree.template}\n\n")
+                continue
+            rendered = render_param_tree(tree)
+            f.write(rendered)
+            f.write("\n\n")
+
+    n_with_params = sum(1 for _, t in ordered if t.root.children)
+    print(f"[{name}] 参数树已写入 {out_path} "
+          f"（{len(param_trees)} 个模板，{n_with_params} 个含参数分布）")
+    return out_path
+
 
 def run_one_type(spark: SparkSession, df, log_type: str, suffix: str, args):
     """对某一类日志执行模板挖掘并输出结果，返回 (日志条数, 模板数)。"""
@@ -147,6 +183,13 @@ def run_one_type(spark: SparkSession, df, log_type: str, suffix: str, args):
     print(f"[{log_type}] Top5 模板：")
     for template, count in templates[:5]:
         print(f"    {count:>7}  {template[:120]}")
+
+    # ---- 参数树构建 ----
+    value_rdd2 = sub.rdd.map(lambda r: r["value"])
+    param_trees = build_param_trees(value_rdd2, templates, log_type, args.st)
+    _write_tree_output(args.output, log_type, param_trees, templates)
+    # -------------------
+
     return total, n_tpl
 
 

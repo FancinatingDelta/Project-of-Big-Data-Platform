@@ -1,0 +1,91 @@
+4869803	severity: info, message: <*> <*> <*>
+3183996	info: <*>
+1761767	severity: debug, message: <*> <*>
+1591705	<*> endpoint 'gRPC - <*>
+975558	at <*>
+795854	Request finished in <*> <NUM> application/grpc
+795851	Request starting HTTP/<NUM> POST <*> application/grpc
+729562	<*> called with userId=<TID>
+631353	severity: debug, message: <*> <*> <*>
+596341	severity: INFO, message: [Recv ListRecommendations] <*> <*> <*> <*> <*>
+99870	severity: info, message: home
+66284	ddItemAsync called with userId=<TID>, <*> quantity=<NUM>
+61176	severity: warning, message: failed to retrieve ads
+60950	ar <NUM>, <NUM> <NUM>:<NUM>:<NUM> <*> <*> <*>
+60937	EVERE: Exception while executing runnable <*>
+60937	ava.lang.NullPointerException
+33090	severity: info, message: Transaction processed: visa ending <NUM> Amount: <*>
+33090	severity: info, message: payment went through (transaction_id: <TID>)
+33090	severity: info, message: PaymentService#Charge invoked with request <*>
+33086	severity: INFO, message: A request to send order confirmation email to someone@example.com has been received.
+33080	severity: info, message: order placed
+33080	severity: info, message: order confirmation email sent to "someone@example.com"
+2606	severity: error, message: request error
+1082	at Grpc.Shared.Server.UnaryServerMethodInvoker`<NUM>.AwaitInvoker(Task`<NUM> invokerTask, GrpcActivatorHandle`<NUM> serviceHandle)
+982	at <*> userId) in /app/cartstore/RedisCartStore.cs:line <*>
+670	Background saving started by pid <NUM>
+670	<NUM> changes in <NUM> seconds. Saving...
+670	DB saved on disk
+670	Background saving terminated with success
+670	RDB: <NUM> MB of memory used by copy-on-write
+550	File <*> line <NUM>, in <*>
+548	at Grpc.AspNetCore.Server.Internal.CallHandlers.UnaryServerCallHandler`<NUM>.HandleCallAsyncCore(HttpContext httpContext, HttpContextServerCallContext serverCallContext)
+548	at Grpc.AspNetCore.Server.Internal.CallHandlers.ServerCallHandlerBase`<NUM>.<HandleCallAsync>g__AwaitHandleCall|8_0(HttpContextServerCallContext serverCallContext, Method`<NUM> method, Task handleCall)
+541	Error status code 'FailedPrecondition' raised.
+527	rpc.Core.RpcException: Status(StatusCode="FailedPrecondition", Detail="Can't access cart storage. StackExchange.Redis.RedisTimeoutException: Timeout awaiting response (outbound=0KiB, inbound=0KiB, <*> elapsed, timeout is 5000ms), <*> next: <*> <TID>, inst: <NUM>, qu: <NUM>, qs: <NUM>, aw: False, rs: ReadAsync, ws: Idle, in: <NUM>, in-pipe: <NUM>, out-pipe: <NUM>, serverEndpoint: redis-cart:<NUM>, mc: <NUM>/<NUM>/<NUM>, mgr: <NUM> of <NUM> available, clientName: cartservice-<NUM>, IOCP: (Busy=<NUM>,Free=<NUM>,Min=<NUM>,Max=<NUM>), WORKER: (Busy=<NUM>,Free=<NUM>,Min=<NUM>,Max=<NUM>), v: <NUM>.<NUM>.<NUM>.<NUM> (Please take a look at this article for some common client-side issues that can cause timeouts: https://stackexchange.github.io/StackExchange.Redis/Timeouts)
+148	severity: warning, message: failed to query product by id: dial tcp: lookup basic-tidb-external.tidb-cluster on <NUM>.<NUM>.<NUM>.<NUM>:<NUM>: read udp <NUM>.<NUM>.<NUM>.<NUM>:<NUM>-><NUM>.<NUM>.<NUM>.<NUM>:<NUM>: i/o timeout
+103	severity: warning, message: failed to query product by id: dial tcp: lookup basic-tidb-external.tidb-cluster on <NUM>.<NUM>.<NUM>.<NUM>:<NUM>: no such host
+100	at cartservice.cartstore.RedisCartStore.AddItemAsync(String userId, String productId, Int32 quantity) in /app/cartstore/RedisCartStore.cs:line <*>
+57	at <*> request, ServerCallContext context) in /app/CartServiceImpl.cs:line <NUM>
+55	self.span_exporter.export(self.spans_list[:idx]) # type: ignore
+55	self._send_output(message_body, encode_chunked=encode_chunked)
+55	RROR:opentelemetry.sdk.trace.export:Exception while exporting Span batch.
+55	raceback (most recent call last):
+55	for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+55	for res in getaddrinfo(host, port, <NUM>, SOCK_STREAM):
+55	(self.host,self.port), self.timeout, self.source_address)
+55	self.__http.endheaders()
+55	self.send(msg)
+55	self.connect()
+55	self.collector.submit(batch)
+55	self.http_transport.flush()
+45	mysql] <NUM>/<NUM>/<NUM> <NUM>:<NUM>:<NUM> packets.go:<NUM>: unexpected EOF
+30	ocket.gaierror: [Errno -<NUM>] Name or service not known
+25	ocket.gaierror: [Errno -<NUM>] Temporary failure in name resolution
+14	fail: Grpc.AspNetCore.Server.ServerCallHandler[<NUM>]
+14	at Grpc.AspNetCore.Server.Internal.PipeExtensions.ReadSingleMessageAsync[T](PipeReader input, HttpContextServerCallContext serverCallContext, Func`<NUM> deserializer)
+14	ystem.IO.IOException: The client reset the request stream.
+14	at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpRequestPipeReader.ReadAsync(CancellationToken cancellationToken)
+13	onnecting to Redis: redis-cart:<NUM>,ssl=false,allowAdmin=true,connectRetry=<NUM>
+13	uccessfully connected to Redis
+13	ARNING: Failed to export spans
+13	erforming small test
+13	rpc.Core.RpcException: Status(StatusCode="FailedPrecondition", Detail="Can't access cart storage. StackExchange.Redis.RedisTimeoutException: Timeout awaiting response (outbound=0KiB, inbound=0KiB, <*> elapsed, timeout is 5000ms), command=HGET, next: INFO, inst: <NUM>, qu: <NUM>, qs: <NUM>, aw: False, rs: ReadAsync, ws: Idle, in: <NUM>, in-pipe: <NUM>, out-pipe: <NUM>, serverEndpoint: redis-cart:<NUM>, mc: <NUM>/<NUM>/<NUM>, mgr: <NUM> of <NUM> available, clientName: cartservice-<NUM>, IOCP: (Busy=<NUM>,Free=<NUM>,Min=<NUM>,Max=<NUM>), WORKER: (Busy=<NUM>,Free=<NUM>,Min=<NUM>,Max=<NUM>), v: <NUM>.<NUM>.<NUM>.<NUM> (Please take a look at this article for some common client-side issues that can cause timeouts: https://stackexchange.github.io/StackExchange.Redis/Timeouts)
+12	tarted as process with id <NUM>
+12	mall test result: OK
+12	Now listening on: http://<NUM>.<NUM>.<NUM>.<NUM>:<NUM>
+12	Content root path: /app
+12	nsecure mode!
+12	eading cart service port from PORT environment variable
+12	eading redis cache address from environment variable REDIS_ADDR
+12	rying to start a grpc server at <NUM>.<NUM>.<NUM>.<NUM>:<NUM>
+12	Application started. Press Ctrl+C to shut down.
+12	eading host address from LISTEN_ADDR environment variable
+12	Hosting environment: Production
+12	ut of memory.
+10	ava.net.UnknownHostException: jaeger-collector
+10	severity: warning, message: failed to send order confirmation to "someone@example.com": rpc error: code = Canceled desc = context canceled
+7	Error when executing service method 'GetCart'.
+7	Error reading message.
+4	onnection to redis was retored successfully
+2	at <*> message, ResultProcessor`<NUM> processor, ServerEndPoint server) in <*> <NUM>
+2	<NUM>/<NUM>/<NUM> <NUM>:<NUM>:<NUM> failed to upload traces; HTTP status code: <NUM>
+2	at java.net.Inet4AddressImpl.lookupAllHostAddr(Native Method)
+1	ava.net.SocketTimeoutException: timeout
+1	at cartservice.cartstore.RedisCartStore.EnsureRedisConnected() in /app/cartstore/RedisCartStore.cs:line <NUM>
+1	aused by: java.net.SocketException: Socket closed
+1	at StackExchange.Redis.RedisDatabase.StringGet(RedisKey key, CommandFlags flags) in /_/src/StackExchange.Redis/RedisDatabase.cs:line <NUM>
+1	ava.net.UnknownHostException: jaeger-collector: Temporary failure in name resolution
+1	ava.net.UnknownHostException: jaeger-collector: Name or service not known
+1	... <NUM> more
+1	rpc.Core.RpcException: Status(StatusCode="FailedPrecondition", Detail="Can't access cart storage. StackExchange.Redis.RedisTimeoutException: Timeout performing GET (5000ms), next: GET cart, inst: <NUM>, qu: <NUM>, qs: <NUM>, aw: False, rs: ReadAsync, ws: Idle, in: <NUM>, in-pipe: <NUM>, out-pipe: <NUM>, serverEndpoint: redis-cart:<NUM>, mc: <NUM>/<NUM>/<NUM>, mgr: <NUM> of <NUM> available, clientName: cartservice-<NUM>, IOCP: (Busy=<NUM>,Free=<NUM>,Min=<NUM>,Max=<NUM>), WORKER: (Busy=<NUM>,Free=<NUM>,Min=<NUM>,Max=<NUM>), v: <NUM>.<NUM>.<NUM>.<NUM> (Please take a look at this article for some common client-side issues that can cause timeouts: https://stackexchange.github.io/StackExchange.Redis/Timeouts)
